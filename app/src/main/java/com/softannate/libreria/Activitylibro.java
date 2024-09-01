@@ -1,6 +1,5 @@
 package com.softannate.libreria;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -19,49 +18,52 @@ import com.softannate.libreria.databinding.ActivityLibroBinding;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class Activitylibro extends AppCompatActivity {
 
-    private ActivityLibroBinding binding; // Declaro el binding para enlazar datos
-    private MainActivityViewModel vm; // Declaro el view model
-    private String libroNombre; // Variable para almacenar el nombre del libro
-    private LibroAdapter adaptador; // Adaptador para el RecyclerView
-    private ArrayList<Libro> libros; // Lista para almacenar los libros
+    private ActivityLibroBinding binding;
+    private MainActivityViewModel vm;
+    private String libroNombre;
+    private LibroAdapter adaptador;
+    private ArrayList<Libro> libros;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_libro);
 
-        // inflo el layout y configuro el binding
         binding = ActivityLibroBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // obtengo el nombre del libro de los extras del Intent
         libroNombre = getIntent().getStringExtra("libro");
-
-        // inicializo la lista de libros
         libros = new ArrayList<>();
 
-        // Configuro el RecyclerView
+        // Configura el RecyclerView
         setupRecyclerView();
 
-        // Obtengo el ViewModel
+        // Obtiene el ViewModel y observa los cambios en la lista de libros
         vm = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
-        // realizo la búsqueda
-            vm.buscarLibro(libroNombre);
-
-        // Obtengo el ViewModel y observo los cambios en la lista de libros
         vm.getMLibro().observe(this, nuevosLibros -> {
+            if (nuevosLibros != null && !nuevosLibros.isEmpty()) {
                 libros.clear();
                 libros.addAll(nuevosLibros);
+
+                // Maneja el caso en que no se encuentra ningún libro
+                if (libros.isEmpty()) {
+                    Toast.makeText(Activitylibro.this, "Libro no encontrado", Toast.LENGTH_SHORT).show();
+                } else {
+                    adaptador.notifyDataSetChanged(); // Actualiza el adaptador con el libro encontrado
+                }
+            }
         });
+
+        // Realiza la búsqueda del libro cuando la actividad se crea
+            vm.buscarLibro(libroNombre);
     }
 
     private void setupRecyclerView() {
         binding.lista.setLayoutManager(new LinearLayoutManager(this));
-        adaptador = new LibroAdapter(libros, getLayoutInflater()); // Inicializo el adaptador con la lista de libros
+        adaptador = new LibroAdapter(libros, getLayoutInflater());
         binding.lista.setAdapter(adaptador);
     }
 }

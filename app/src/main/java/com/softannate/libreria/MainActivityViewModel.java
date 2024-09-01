@@ -27,16 +27,27 @@ public class MainActivityViewModel extends AndroidViewModel {
         return mLibro;
     }
 
-    // Método para buscar libros
-    public void buscarLibro(String query) {
-        ArrayList<Libro> librosFiltrados = new ArrayList<>();
-        for (Libro libro : libros) {
-            if (libro.getTitulo().toLowerCase().contains(query.toLowerCase())) {
-                librosFiltrados.add(libro);
-            }
+    // Método para buscar libros, muestra una lista
+//    public void buscarLibro(String query) {
+//      ArrayList<Libro> librosFiltrados = new ArrayList<>();
+//        for (Libro libro : libros) {
+//            if (libro.getTitulo().toLowerCase().contains(query.toLowerCase())) {
+//                librosFiltrados.add(libro);
+//            }
+//        }
+//       mLibro.setValue(librosFiltrados);
+//    }
+// Método para buscar libros,muestra uno
+public void buscarLibro(String query) {
+    ArrayList<Libro> librosFiltrados = new ArrayList<>();
+    for (Libro libro : libros) {
+        if (libro.getTitulo().toLowerCase().contains(query.toLowerCase())) {
+            librosFiltrados.add(libro);
+            break; // Solo añade el primer libro que coincide y luego sale del bucle
         }
-        mLibro.setValue(librosFiltrados);
     }
+    mLibro.setValue(librosFiltrados);
+}
 
 
     public void cargarLibros() {
